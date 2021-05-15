@@ -1,21 +1,56 @@
-import { StatusBar } from 'expo-status-bar';
+import 'react-native-gesture-handler';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import RoomsHeader from './components/RoomsHeader';
+import {useFonts} from 'expo-font';
+import RoomIcons from './components/RoomIcons';
+import SearchIcon from './assets/icons/SearchIcon';
+import RoomsIcon from './assets/icons/RoomsIcon';
+import RoomsScreen from './screens/RoomsScreen';
+const Stack = createStackNavigator();
+
+const globalHeaderStyles = {
+  headerStyle: {
+    height: 125,
+  },
+};
 
 export default function App() {
+  const [loaded] = useFonts({
+    Poppins: require('./assets/fonts/Poppins-Bold.ttf'),
+    PoppinsLight: require('./assets/fonts/Poppins-Light.ttf'),
+    PoppinsRegular: require('./assets/fonts/Poppins-Regular.ttf'),
+  });
+
+  if (!loaded) return null;
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={globalHeaderStyles}>
+        <Stack.Screen
+          name="Rooms"
+          component={RoomsScreen}
+          options={{
+            title: 'Rooms',
+            headerTitle: <RoomsHeader />,
+            headerRight: () => (
+              <RoomIcons Search={SearchIcon} Rooms={RoomsIcon} />
+            ),
+            headerTransparent: true,
+            headerBackground: () => (
+              <View
+                style={{
+                  backgroundColor: '#B6DEFD',
+                  height: 125,
+                  borderBottomLeftRadius: 24,
+                  borderBottomRightRadius: 24,
+                }}
+              ></View>
+            ),
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
