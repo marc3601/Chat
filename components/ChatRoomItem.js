@@ -1,23 +1,35 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
-export default function ChatRoomItem({...msg}) {
+import ProfileIcon from '../assets/icons/ProfileIcon';
+export default function ChatRoomItem({...room}) {
   return (
-    <View
-      key={msg.id}
-      style={msg.active ? styles.containerActive : styles.container}
-    >
-      <Image style={styles.image} source={msg.img} />
+    <View style={false ? styles.containerActive : styles.container}>
+      {room.roomPic ? (
+        <Image style={styles.image} source={{uri: room.roomPic}} />
+      ) : (
+        <ProfileIcon />
+      )}
+
       <View
-        style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          position: 'relative',
+        }}
       >
         <View style={styles.textContainer}>
-          <Text style={msg.active ? styles.mainTextActive : styles.mainText}>
-            {msg.head}
+          <Text style={false ? styles.mainTextActive : styles.mainText}>
+            {room.__typename}
           </Text>
-          <Text style={msg.active ? styles.textActive: styles.text}>{msg.text}</Text>
+          <Text style={false ? styles.textActive : styles.text}>
+            {room.name}
+          </Text>
         </View>
         <View>
-          <Text style={styles.active}>{msg.lastActive}</Text>
+          <Text style={false ? styles.activeDot : styles.active}>
+            2 minutes
+          </Text>
         </View>
       </View>
     </View>
@@ -68,8 +80,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Poppins',
   },
+  activeDot: {
+    position: 'absolute',
+    right: 0,
+    color: 'green',
+    // alignSelf: 'stretch',
+  },
   active: {
-    color: 'white',
-    alignSelf: 'stretch',
+    color: 'black',
+    position: 'absolute',
+    right: 0,
+    color: 'black',
   },
 });

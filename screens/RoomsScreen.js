@@ -1,8 +1,23 @@
 import React from 'react';
-import {ScrollView} from 'react-native';
+import {ScrollView, Text} from 'react-native';
+import {gql, useQuery} from '@apollo/client';
 import ChatRoomItem from '../components/ChatRoomItem';
 import img from '../assets/user.jpg';
 const RoomsScreen = () => {
+  const GET_ROOMS = gql`
+    query GetRooms {
+      usersRooms {
+        rooms {
+          id
+          name
+          roomPic
+        }
+      }
+    }
+  `;
+
+  const {loading, error, data} = useQuery(GET_ROOMS);
+
   const msgs = [
     {
       id: 1,
@@ -27,73 +42,76 @@ const RoomsScreen = () => {
       lastActive: '24 min',
     },
     {
-      id: 3,
+      id: 4,
       img: img,
       head: 'The one with Remus',
       text: 'Hey Harry, how you doing?',
       lastActive: '24 min',
     },
     {
-      id: 3,
+      id: 5,
       img: img,
       head: 'The one with Remus',
       text: 'Hey Harry, how you doing?',
       lastActive: '24 min',
     },
     {
-      id: 3,
+      id: 6,
       img: img,
       head: 'The one with Remus',
       text: 'Hey Harry, how you doing?',
       lastActive: '24 min',
     },
     {
-      id: 3,
+      id: 7,
       img: img,
       head: 'The one with Remus',
       text: 'Hey Harry, how you doing?',
       lastActive: '24 min',
     },
     {
-      id: 3,
+      id: 8,
       img: img,
       head: 'The one with Remus',
       text: 'Hey Harry, how you doing?',
       lastActive: '24 min',
     },
     {
-      id: 3,
+      id: 9,
       img: img,
       head: 'The one with Remus',
       text: 'Hey Harry, how you doing?',
       lastActive: '24 min',
     },
     {
-      id: 3,
+      id: 10,
       img: img,
       head: 'The one with Remus',
       text: 'Hey Harry, how you doing?',
       lastActive: '24 min',
     },
     {
-      id: 3,
+      id: 11,
       img: img,
       head: 'The one with Remus',
       text: 'Hey Harry, how you doing?',
       lastActive: '24 min',
     },
     {
-      id: 3,
+      id: 12,
       img: img,
       head: 'The one with Remus',
       text: 'Hey Harry, how you doing?',
       lastActive: '24 min',
     },
   ];
+
+  if (loading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error:(</Text>;
   return (
     <ScrollView style={{paddingTop: 125, backgroundColor: '#E5E5E5'}}>
-      {msgs.map((msg) => (
-        <ChatRoomItem {...msg} />
+      {data.usersRooms.rooms.map((room) => (
+        <ChatRoomItem key={room.id} {...room} />
       ))}
     </ScrollView>
   );
