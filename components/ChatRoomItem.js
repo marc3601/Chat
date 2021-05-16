@@ -3,9 +3,9 @@ import {View, Text, Image, StyleSheet} from 'react-native';
 import {gql, useQuery} from '@apollo/client';
 import ProfileIcon from '../assets/icons/ProfileIcon';
 import TimeAgo from 'react-native-timeago';
-export default function ChatRoomItem({...room}) {
-  const [roomNameTrim, setRoomNameTrim] = useState(null);
-  const [messageTrim, setMessageTrim] = useState(null);
+export default function ChatRoomItem({navigation, ...room}) {
+  const [roomNameTrim, setRoomNameTrim] = useState('');
+  const [messageTrim, setMessageTrim] = useState('');
   const GET_MESSAGES = gql`
   query getMessages {
     room(id:"${room.id}") {
@@ -18,17 +18,22 @@ export default function ChatRoomItem({...room}) {
   }
 `;
   const {loading, error, data} = useQuery(GET_MESSAGES);
-  useEffect(() => {
-    if (room.name.length >= 45) {
-      const trimmed = room.name.substring(0, room.name.length - 10) + '...';
-      setRoomNameTrim(trimmed);
-    }
-    if (data.room.messages[0].body.length >= 45) {
-      const trimmed = data.room.messages[0].body.substring(0, 45) + '...';
-      setMessageTrim(trimmed);
-    }
-  }, []);
-  if (loading)
+  if (loading) return <Text>'Loading...'</Text>;
+  if (error) return <Text>{`Error! ${error.message}`}</Text>;
+
+  // console.log(data.room);
+  // useEffect(() => {
+  //   if (roomNameTrim.length >= 40) {
+  //     const trimmed = room.name.substring(0, room.name.length - 10) + '...';
+  //     setRoomNameTrim(trimmed);
+  //   }
+  //   if (messageTrim.length >= 45) {
+  //     const trimmed = data.room.messages[0].body.substring(0, 45) + '...';
+  //     setMessageTrim(trimmed);
+  //   }
+  // }, [data]);
+
+  if (loading) {
     return (
       <Text
         style={{
@@ -41,7 +46,9 @@ export default function ChatRoomItem({...room}) {
         Loading...
       </Text>
     );
-  if (error)
+  }
+
+  if (error) {
     return (
       <Text
         style={{
@@ -54,7 +61,8 @@ export default function ChatRoomItem({...room}) {
         Error:(
       </Text>
     );
-  if (data) {
+  }
+
     return (
       <View style={false ? styles.containerActive : styles.container}>
         {room.roomPic ? (
@@ -87,7 +95,7 @@ export default function ChatRoomItem({...room}) {
         </View>
       </View>
     );
-  }
+
 }
 const styles = StyleSheet.create({
   containerActive: {
@@ -149,6 +157,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     color: 'black',
-    fontSize:11
+    fontSize: 11,
   },
 });

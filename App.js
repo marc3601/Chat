@@ -2,8 +2,15 @@ import 'react-native-gesture-handler';
 import 'localstorage-polyfill';
 import React from 'react';
 import {View} from 'react-native';
-import {ApolloClient, createHttpLink, InMemoryCache} from '@apollo/client';
+import {
+  ApolloClient,
+  createHttpLink,
+  InMemoryCache,
+  split,
+} from '@apollo/client';
 import {ApolloProvider} from '@apollo/client/react';
+import {getMainDefinition} from '@apollo/client/utilities';
+import {WebSocketLink} from '@apollo/client/link/ws';
 import {setContext} from '@apollo/client/link/context';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -20,6 +27,13 @@ const httpLink = createHttpLink({
   uri: 'https://chat.thewidlarzgroup.com/api/graphiql',
 });
 
+const wsLink = new WebSocketLink({
+  uri: 'wss://chat.thewidlarzgroup.com/socket',
+  options: {
+    reconnect: true,
+  },
+});
+
 const authLink = setContext((_, {headers}) => {
   const token =
     'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjaGF0bHkiLCJleHAiOjE2MjMxOTQ0NDEsImlhdCI6MTYyMDc3NTI0MSwiaXNzIjoiY2hhdGx5IiwianRpIjoiOTdmZTM0NzYtM2QwZi00MjlmLTgyNTctNWIzYmVkMmEwNTIwIiwibmJmIjoxNjIwNzc1MjQwLCJzdWIiOiI3NDU1N2U3MC00MTU5LTQ4MzItODVhNi04YmQ4MThhNWQ0MzQiLCJ0eXAiOiJhY2Nlc3MifQ.6THpS6WJIli-lC1wL6fA2FRDGiF6VSGky1_ZsJBWJU7bMkgygRiols_-PxH3J3C9BEaTJFZbjhkYGhKWpbt9jw';
@@ -31,8 +45,20 @@ const authLink = setContext((_, {headers}) => {
   };
 });
 
+const splitLink = split(
+  ({query}) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  authLink.concat(httpLink)
+);
+
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: splitLink,
   cache: new InMemoryCache(),
 });
 
@@ -80,7 +106,7 @@ export default function App() {
             name="Chat"
             component={Chat}
             options={{
-              title: 'Rooms',
+              title: 'Chat',
               headerTitle: <RoomsHeader />,
               headerRight: () => (
                 <RoomIcons Search={SearchIcon} Rooms={RoomsIcon} />
