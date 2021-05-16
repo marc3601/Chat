@@ -1,8 +1,9 @@
-import React from 'react';
-import {ScrollView, Text} from 'react-native';
+import React, {useEffect} from 'react';
+import {ScrollView, Text, Button} from 'react-native';
 import {gql, useQuery} from '@apollo/client';
 import ChatRoomItem from '../components/ChatRoomItem';
-const RoomsScreen = () => {
+import {TouchableOpacity} from 'react-native';
+const RoomsScreen = ({navigation}) => {
   const GET_ROOMS = gql`
     query GetRooms {
       usersRooms {
@@ -17,13 +18,38 @@ const RoomsScreen = () => {
 
   const {loading, error, data} = useQuery(GET_ROOMS);
 
-  console.log(data);
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error:(</Text>;
+  if (loading)
+    return (
+      <Text
+        style={{
+          paddingTop: 140,
+          textAlign: 'center',
+          fontSize: 30,
+          color: '#5603AD',
+        }}
+      >
+        Loading...
+      </Text>
+    );
+  if (error)
+    return (
+      <Text
+        style={{
+          paddingTop: 140,
+          textAlign: 'center',
+          fontSize: 30,
+          color: 'red',
+        }}
+      >
+        Error:(
+      </Text>
+    );
   return (
     <ScrollView style={{paddingTop: 125, backgroundColor: '#E5E5E5'}}>
       {data.usersRooms.rooms.map((room) => (
-        <ChatRoomItem key={room.id} {...room} />
+        <TouchableOpacity activeOpacity={0.5} key={room.id}>
+          <ChatRoomItem {...room} />
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );

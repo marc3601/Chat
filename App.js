@@ -13,6 +13,7 @@ import RoomIcons from './components/RoomIcons';
 import SearchIcon from './assets/icons/SearchIcon';
 import RoomsIcon from './assets/icons/RoomsIcon';
 import RoomsScreen from './screens/RoomsScreen';
+import Chat from './screens/Chat';
 const Stack = createStackNavigator();
 
 const httpLink = createHttpLink({
@@ -56,6 +57,28 @@ export default function App() {
           <Stack.Screen
             name="Rooms"
             component={RoomsScreen}
+            options={{
+              title: 'Rooms',
+              headerTitle: <RoomsHeader />,
+              headerRight: () => (
+                <RoomIcons Search={SearchIcon} Rooms={RoomsIcon} />
+              ),
+              headerTransparent: true,
+              headerBackground: () => (
+                <View
+                  style={{
+                    backgroundColor: '#B6DEFD',
+                    height: 125,
+                    borderBottomLeftRadius: 24,
+                    borderBottomRightRadius: 24,
+                  }}
+                ></View>
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="Chat"
+            component={Chat}
             options={{
               title: 'Rooms',
               headerTitle: <RoomsHeader />,
